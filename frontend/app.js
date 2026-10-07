@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             page.addEventListener("touchstart", (e) => {
+                if (window.innerWidth <= 768) return; // Ignora animação no mobile
                 if (e.target.closest("button") || e.target.closest("a")) return;
                 const touch = e.touches[0];
                 isClicking = true;
@@ -184,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.addEventListener("touchmove", (e) => {
+            if (window.innerWidth <= 768) return; // Ignora animação no mobile
             if (e.touches.length > 0) {
                 const touch = e.touches[0];
                 handleMove(touch.clientX, touch.clientY, true);
@@ -195,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.addEventListener("touchend", (e) => {
+            if (window.innerWidth <= 768) return; // Ignora animação no mobile
             const touch = e.changedTouches[0] || e.touches[0];
             if (touch) {
                 handleRelease(touch.clientX, touch.clientY, true);
