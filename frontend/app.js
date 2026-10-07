@@ -334,21 +334,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Click events for navigational arrows
-        btnPrev.addEventListener("click", () => {
-            pageFlip.flipPrev();
-        });
+        // Click and Touch events for navigational arrows
+        const handlePrev = (e) => {
+            if (e && e.cancelable) e.preventDefault();
+            if (pageFlip) pageFlip.flipPrev();
+        };
+        const handleNext = (e) => {
+            if (e && e.cancelable) e.preventDefault();
+            if (pageFlip) pageFlip.flipNext();
+        };
 
-        btnNext.addEventListener("click", () => {
-            pageFlip.flipNext();
-        });
+        btnPrev.addEventListener("click", handlePrev);
+        btnPrev.addEventListener("touchstart", handlePrev, { passive: false });
+
+        btnNext.addEventListener("click", handleNext);
+        btnNext.addEventListener("touchstart", handleNext, { passive: false });
 
         // Keyboard events for navigational arrows
         document.addEventListener("keydown", (e) => {
             if (e.key === "ArrowLeft") {
-                pageFlip.flipPrev();
+                handlePrev(e);
             } else if (e.key === "ArrowRight") {
-                pageFlip.flipNext();
+                handleNext(e);
             }
         });
 
