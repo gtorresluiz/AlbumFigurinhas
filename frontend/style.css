@@ -94,6 +94,7 @@ body {
   border-radius: 50%;
   cursor: pointer;
   z-index: 9999;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,6 +119,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .album-viewport {
+    width: 100vw;
+    height: 100vh;
+  }
   .nav-btn {
     width: 44px;
     height: 44px;

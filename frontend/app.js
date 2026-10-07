@@ -336,27 +336,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Click and Touch events for navigational arrows
         const handlePrev = (e) => {
-            if (e && e.cancelable) e.preventDefault();
+            if (e && e.cancelable) { e.preventDefault(); e.stopPropagation(); }
             if (pageFlip) {
-                const current = pageFlip.getCurrentPageIndex();
-                if (current > 0) {
-                    if (pageFlip.getOrientation() === 'portrait') {
-                        // Workaround para bug da biblioteca no modo portrait + cover
-                        pageFlip.flip(current - 1);
-                    } else {
-                        pageFlip.flipPrev();
-                    }
+                if (window.innerWidth <= 768 || pageFlip.getOrientation() === 'portrait') {
+                    // Sem animação no mobile para evitar o bug de cálculo do modo portrait
+                    pageFlip.turnToPrevPage();
+                } else {
+                    pageFlip.flipPrev();
                 }
             }
         };
         const handleNext = (e) => {
-            if (e && e.cancelable) e.preventDefault();
+            if (e && e.cancelable) { e.preventDefault(); e.stopPropagation(); }
             if (pageFlip) {
-                if (pageFlip.getOrientation() === 'portrait') {
-                    const current = pageFlip.getCurrentPageIndex();
-                    if (current < pageFlip.getPageCount() - 1) {
-                        pageFlip.flip(current + 1);
-                    }
+                if (window.innerWidth <= 768 || pageFlip.getOrientation() === 'portrait') {
+                    // Sem animação no mobile
+                    pageFlip.turnToNextPage();
                 } else {
                     pageFlip.flipNext();
                 }
