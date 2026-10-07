@@ -337,11 +337,30 @@ document.addEventListener("DOMContentLoaded", () => {
         // Click and Touch events for navigational arrows
         const handlePrev = (e) => {
             if (e && e.cancelable) e.preventDefault();
-            if (pageFlip) pageFlip.flipPrev();
+            if (pageFlip) {
+                const current = pageFlip.getCurrentPageIndex();
+                if (current > 0) {
+                    if (pageFlip.getOrientation() === 'portrait') {
+                        // Workaround para bug da biblioteca no modo portrait + cover
+                        pageFlip.flip(current - 1);
+                    } else {
+                        pageFlip.flipPrev();
+                    }
+                }
+            }
         };
         const handleNext = (e) => {
             if (e && e.cancelable) e.preventDefault();
-            if (pageFlip) pageFlip.flipNext();
+            if (pageFlip) {
+                if (pageFlip.getOrientation() === 'portrait') {
+                    const current = pageFlip.getCurrentPageIndex();
+                    if (current < pageFlip.getPageCount() - 1) {
+                        pageFlip.flip(current + 1);
+                    }
+                } else {
+                    pageFlip.flipNext();
+                }
+            }
         };
 
         btnPrev.addEventListener("click", handlePrev);
