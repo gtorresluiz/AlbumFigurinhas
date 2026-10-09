@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Monitora o mousedown/touchstart em cada página para iniciar a intenção de arraste
         document.querySelectorAll(".page").forEach((page, index) => {
             page.addEventListener("mousedown", (e) => {
-                if (e.target.closest("button") || e.target.closest("a")) return;
+                if (e.target.closest("button") || e.target.closest("a") || e.target.closest(".sticker-img")) return;
                 isClicking = true;
                 startX = e.clientX;
                 startY = e.clientY;
@@ -366,6 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Keyboard events for navigational arrows
         document.addEventListener("keydown", (e) => {
+            if (document.getElementById("lightbox")?.classList.contains("active")) return;
             if (e.key === "ArrowLeft") {
                 handlePrev(e);
             } else if (e.key === "ArrowRight") {
@@ -376,4 +377,151 @@ document.addEventListener("DOMContentLoaded", () => {
         // Hide left button initially since start page is 0
         btnPrev.classList.add("hidden");
     }
+
+    // ===================================================
+    // 5. MUSIC PLAYER — "Can't Take My Eyes Off You"
+    // Usa YouTube IFrame API para tocar a música em background
+    // ===================================================
+    const musicBtn = document.getElementById("music-toggle");
+    const musicIconPlay = musicBtn.querySelector(".music-icon-play");
+    const musicIconPause = musicBtn.querySelector(".music-icon-pause");
+
+    let ytPlayer = null;
+    let musicPlaying = false;
+    const YT_VIDEO_ID = "Oo9buo9Mjas"; // Can't Take My Eyes Off You - Frankie Valli
+
+    // Carrega a API do YouTube dinamicamente
+    function loadYouTubeAPI() {
+        if (window.YT && window.YT.Player) {
+            initYTPlayer();
+            return;
+        }
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+        initYTPlayer();
+    };
+
+    function initYTPlayer() {
+        if (ytPlayer) return;
+        ytPlayer = new YT.Player("music-player", {
+            videoId: YT_VIDEO_ID,
+            playerVars: {
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                iv_load_policy: 3,
+                loop: 1,
+                playlist: YT_VIDEO_ID,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
+            },
+            events: {
+                onReady: (event) => {
+                    // Player pronto — a música só toca quando o usuário clicar
+                },
+                onStateChange: (event) => {
+                    if (event.data === YT.PlayerState.ENDED) {
+                        ytPlayer.seekTo(0);
+                        ytPlayer.playVideo();
+                    }
+                },
+            },
+        });
+    }
+
+    musicBtn.addEventListener("click", () => {
+        if (!ytPlayer) {
+            loadYouTubeAPI();
+            // Aguarda o player ficar pronto e toca
+            const interval = setInterval(() => {
+                if (ytPlayer && ytPlayer.playVideo) {
+                    clearInterval(interval);
+                    ytPlayer.playVideo();
+                    setMusicPlaying(true);
+                }
+            }, 300);
+            return;
+        }
+
+        if (musicPlaying) {
+            ytPlayer.pauseVideo();
+            setMusicPlaying(false);
+        } else {
+            ytPlayer.playVideo();
+            setMusicPlaying(true);
+        }
+    });
+
+    function setMusicPlaying(playing) {
+        musicPlaying = playing;
+        if (playing) {
+            musicBtn.classList.add("playing");
+            musicIconPlay.classList.add("hidden");
+            musicIconPause.classList.remove("hidden");
+        } else {
+            musicBtn.classList.remove("playing");
+            musicIconPlay.classList.remove("hidden");
+            musicIconPause.classList.add("hidden");
+        }
+    }
+
+    // ===================================================
+    // 6. LIGHTBOX — clicar na figurinha expande a foto
+    // ===================================================
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxNumber = document.getElementById("lightbox-number");
+    const lightboxName = document.getElementById("lightbox-name");
+    const lightboxRole = document.getElementById("lightbox-role");
+    const lightboxClose = document.getElementById("lightbox-close");
+    const lightboxBackdrop = lightbox.querySelector(".lightbox-backdrop");
+
+    function openLightbox(src, alt, number, name, role) {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || name;
+        lightboxNumber.textContent = number;
+        lightboxName.textContent = name;
+        lightboxRole.textContent = role;
+        lightbox.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove("active");
+        document.body.style.overflow = "";
+        // Limpa src após a animação de saída
+        setTimeout(() => {
+            if (!lightbox.classList.contains("active")) {
+                lightboxImg.src = "";
+            }
+        }, 300);
+    }
+
+    // Delegação de eventos: escuta cliques nas imagens dentro de slots preenchidos
+    document.addEventListener("click", (e) => {
+        const img = e.target.closest(".slot-preenchido .sticker-img");
+        if (!img) return;
+
+        const slot = img.closest(".sticker-slot");
+        const number = slot.querySelector(".slot-number")?.textContent || "";
+        const name = slot.querySelector(".slot-name")?.textContent || "";
+        const role = slot.querySelector(".slot-role")?.textContent || "";
+
+        openLightbox(img.src, img.alt, number, name, role);
+    });
+
+    lightboxClose.addEventListener("click", closeLightbox);
+    lightboxBackdrop.addEventListener("click", closeLightbox);
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightbox.classList.contains("active")) {
+            closeLightbox();
+        }
+    });
 });

@@ -1345,3 +1345,216 @@ body.theme-light .page-cover-back {
     box-shadow: 0 0 35px rgba(255, 71, 126, 0.6);
   }
 }
+
+/* ================================================
+   MUSIC BUTTON
+   ================================================ */
+.music-btn {
+  position: absolute;
+  top: 20px;
+  right: 140px;
+  background: rgba(184, 2, 85, 0.15);
+  border: 1px solid rgba(184, 2, 85, 0.4);
+  color: var(--color-white-snow);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-btn:hover {
+  background: var(--color-dev-blue);
+  border-color: var(--color-white-snow);
+  box-shadow: 0 0 15px rgba(255, 29, 141, 0.6);
+  transform: scale(1.05);
+}
+
+.music-btn.playing {
+  background: rgba(184, 2, 85, 0.35);
+  border-color: var(--color-dev-blue);
+  box-shadow: 0 0 18px rgba(255, 29, 141, 0.5);
+  animation: music-pulse 2s ease-in-out infinite;
+}
+
+@keyframes music-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(255, 29, 141, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(255, 29, 141, 0.8), 0 0 50px rgba(255, 29, 141, 0.3);
+  }
+}
+
+/* ================================================
+   LIGHTBOX
+   ================================================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lightbox-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 90vw;
+  max-height: 90vh;
+  animation: lightbox-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.lightbox:not(.active) .lightbox-content {
+  animation: lightbox-out 0.25s ease forwards;
+}
+
+@keyframes lightbox-in {
+  from {
+    transform: scale(0.75);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.75);
+    opacity: 0;
+  }
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -48px;
+  right: -8px;
+  background: rgba(255, 29, 141, 0.2);
+  border: 1px solid rgba(255, 29, 141, 0.5);
+  color: var(--color-white-snow);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.lightbox-close:hover {
+  background: var(--color-dev-blue);
+  border-color: var(--color-white-snow);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.lightbox-img-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px rgba(255, 29, 141, 0.4),
+    0 30px 80px rgba(0, 0, 0, 0.8),
+    0 0 60px rgba(184, 2, 85, 0.2);
+}
+
+.lightbox-photo {
+  display: block;
+  max-width: min(520px, 85vw);
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+.lightbox-caption {
+  text-align: center;
+  color: var(--color-white-snow);
+}
+
+.lightbox-number {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-dev-blue);
+  background: rgba(255, 29, 141, 0.12);
+  border: 1px solid rgba(255, 29, 141, 0.3);
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.lightbox-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-white-snow);
+  margin-bottom: 4px;
+}
+
+.lightbox-role {
+  font-size: 0.9rem;
+  color: rgba(255, 245, 248, 0.65);
+}
+
+/* Sticker image becomes clickable when filled */
+.slot-preenchido .sticker-img {
+  cursor: zoom-in;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.slot-preenchido .sticker-img:hover {
+  transform: scale(1.04);
+  filter: brightness(1.08) drop-shadow(0 4px 12px rgba(255, 29, 141, 0.4));
+}
+
+/* Light Theme Overrides for lightbox */
+body.theme-light .lightbox-backdrop {
+  background: rgba(255, 245, 248, 0.85);
+}
+
+body.theme-light .lightbox-caption {
+  color: var(--color-new-black);
+}
+
+body.theme-light .lightbox-name {
+  color: var(--color-deep-blue);
+}
+
+body.theme-light .lightbox-role {
+  color: rgba(13, 0, 6, 0.65);
+}
