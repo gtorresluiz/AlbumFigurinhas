@@ -387,20 +387,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const musicIconPause = musicBtn.querySelector(".music-icon-pause");
 
     let ytPlayer = null;
+    let playerReady = false;   // true só após o evento onReady do YT
+    let playOnReady = false;   // fila: usuário clicou antes do player estar pronto
     let musicPlaying = false;
-    const YT_VIDEO_ID = "Oo9buo9Mjas"; // Can't Take My Eyes Off You - Frankie Valli
+    const YT_VIDEO_ID = "a2Cg98t2oU8"; // Can't Take My Eyes Off You - Frankie Valli (original 1967)
 
-    // Carrega a API do YouTube dinamicamente
+    // Carrega a API do YouTube dinamicamente (lazy — só quando o usuário clicar)
     function loadYouTubeAPI() {
         if (window.YT && window.YT.Player) {
             initYTPlayer();
             return;
         }
+        // Evita inserir o script duas vezes
+        if (document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
         const tag = document.createElement("script");
         tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
     }
 
+    // Chamado automaticamente pelo SDK do YouTube quando ele terminar de carregar
     window.onYouTubeIframeAPIReady = function () {
         initYTPlayer();
     };
@@ -419,33 +424,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 playlist: YT_VIDEO_ID,
                 modestbranding: 1,
                 rel: 0,
-                showinfo: 0,
             },
             events: {
-                onReady: (event) => {
-                    // Player pronto — a música só toca quando o usuário clicar
+                onReady: () => {
+                    playerReady = true;
+                    // Se o usuário já clicou enquanto o player carregava, toca agora
+                    if (playOnReady) {
+                        playOnReady = false;
+                        ytPlayer.playVideo();
+                        setMusicPlaying(true);
+                    }
                 },
                 onStateChange: (event) => {
+                    // Garante loop manual (playerVars.loop às vezes não funciona com IFrame API)
                     if (event.data === YT.PlayerState.ENDED) {
                         ytPlayer.seekTo(0);
                         ytPlayer.playVideo();
                     }
+                },
+                onError: (event) => {
+                    console.warn("YouTube player error:", event.data);
                 },
             },
         });
     }
 
     musicBtn.addEventListener("click", () => {
-        if (!ytPlayer) {
+        if (!ytPlayer || !playerReady) {
+            // Player ainda não carregou — marca para tocar quando estiver pronto
+            playOnReady = true;
             loadYouTubeAPI();
-            // Aguarda o player ficar pronto e toca
-            const interval = setInterval(() => {
-                if (ytPlayer && ytPlayer.playVideo) {
-                    clearInterval(interval);
-                    ytPlayer.playVideo();
-                    setMusicPlaying(true);
-                }
-            }, 300);
+            // Feedback visual imediato para o usuário saber que está carregando
+            musicBtn.classList.add("playing");
+            musicIconPlay.classList.add("hidden");
+            musicIconPause.classList.remove("hidden");
             return;
         }
 

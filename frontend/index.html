@@ -49,11 +49,8 @@
             <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
         </svg>
     </button>
-    <!-- YouTube iframe oculto para streaming da música -->
-    <iframe id="music-player" style="display:none" width="1" height="1"
-        src=""
-        allow="autoplay" referrerpolicy="no-referrer">
-    </iframe>
+    <!-- YouTube iframe fora da tela (display:none impede o player de inicializar) -->
+    <div id="music-player" style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true"></div>
 
     <!-- Navigation Arrows -->
     <button id="btn-prev" class="nav-btn nav-btn-left" aria-label="Página Anterior">
