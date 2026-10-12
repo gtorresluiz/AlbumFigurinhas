@@ -40,22 +40,18 @@
         </svg>
     </button>
 
-    <!-- Music Control -->
-    <button id="music-toggle" class="music-btn" aria-label="Tocar música">
-        <svg class="music-icon-play" viewBox="0 0 24 24" width="22" height="22">
+    <!-- Music Button: abre a música no YouTube em nova aba -->
+    <a id="music-toggle"
+       href="https://www.youtube.com/watch?v=J3Yj7u5_f7o"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="music-btn"
+       aria-label="Ouvir nossa música no YouTube"
+       title="Can't Take My Eyes Off You – Frankie Valli">
+        <svg viewBox="0 0 24 24" width="22" height="22">
             <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
         </svg>
-        <svg class="music-icon-pause hidden" viewBox="0 0 24 24" width="22" height="22">
-            <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-        </svg>
-    </button>
-    <!-- SoundCloud Widget: fora da tela para não aparecer visualmente -->
-    <iframe id="sc-widget"
-        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/frankievalli/cant-take-my-eyes-off-you&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
-        allow="autoplay"
-        style="position:fixed; left:-9999px; top:-9999px; width:200px; height:100px; border:none;"
-        aria-hidden="true">
-    </iframe>
+    </a>
 
     <!-- Navigation Arrows -->
     <button id="btn-prev" class="nav-btn nav-btn-left" aria-label="Página Anterior">
@@ -411,8 +407,6 @@
 
     <!-- Page Flip Library -->
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
-    <!-- SoundCloud Widget API -->
-    <script src="https://w.soundcloud.com/player/api.js"></script>
     <!-- Logic -->
     <script src="app.js"></script>
 </body>

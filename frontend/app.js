@@ -379,80 +379,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ===================================================
-    // 5. MUSIC PLAYER — "Can't Take My Eyes Off You"
-    // Usa SoundCloud Widget API (mais confiável que YouTube para embed)
+    // 5. MUSIC BUTTON — "Can't Take My Eyes Off You"
+    // O botão é um <a href> no HTML que abre o YouTube em nova aba.
+    // Nenhum JS adicional necessário aqui.
     // ===================================================
-    const musicBtn = document.getElementById("music-toggle");
-    const musicIconPlay = musicBtn.querySelector(".music-icon-play");
-    const musicIconPause = musicBtn.querySelector(".music-icon-pause");
-
-    let scWidget = null;
-    let scReady = false;
-    let musicPlaying = false;
-    let playQueued = false; // usuário clicou antes do widget estar pronto
-
-    function initSCWidget() {
-        const iframe = document.getElementById("sc-widget");
-        if (!iframe || !window.SC) return;
-
-        scWidget = SC.Widget(iframe);
-
-        scWidget.bind(SC.Widget.Events.READY, () => {
-            scReady = true;
-            scWidget.setVolume(80);
-            if (playQueued) {
-                playQueued = false;
-                scWidget.play();
-                setMusicPlaying(true);
-            }
-        });
-
-        // Loop automático ao terminar
-        scWidget.bind(SC.Widget.Events.FINISH, () => {
-            scWidget.seekTo(0);
-            scWidget.play();
-        });
-    }
-
-    // Inicializa assim que o DOM + SC API estiverem prontos
-    if (window.SC) {
-        initSCWidget();
-    } else {
-        // SC API carrega de forma async via <script> no HTML
-        window.addEventListener("load", () => {
-            if (window.SC) initSCWidget();
-        });
-    }
-
-    musicBtn.addEventListener("click", () => {
-        if (!scWidget || !scReady) {
-            // Widget ainda inicializando — enfileira o play
-            playQueued = true;
-            setMusicPlaying(true); // feedback visual imediato
-            return;
-        }
-
-        if (musicPlaying) {
-            scWidget.pause();
-            setMusicPlaying(false);
-        } else {
-            scWidget.play();
-            setMusicPlaying(true);
-        }
-    });
-
-    function setMusicPlaying(playing) {
-        musicPlaying = playing;
-        if (playing) {
-            musicBtn.classList.add("playing");
-            musicIconPlay.classList.add("hidden");
-            musicIconPause.classList.remove("hidden");
-        } else {
-            musicBtn.classList.remove("playing");
-            musicIconPlay.classList.remove("hidden");
-            musicIconPause.classList.add("hidden");
-        }
-    }
 
     // ===================================================
     // 6. LIGHTBOX — clicar na figurinha expande a foto
