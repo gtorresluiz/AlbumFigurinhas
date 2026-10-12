@@ -380,92 +380,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===================================================
     // 5. MUSIC PLAYER — "Can't Take My Eyes Off You"
-    // Usa YouTube IFrame API para tocar a música em background
+    // Usa SoundCloud Widget API (mais confiável que YouTube para embed)
     // ===================================================
     const musicBtn = document.getElementById("music-toggle");
     const musicIconPlay = musicBtn.querySelector(".music-icon-play");
     const musicIconPause = musicBtn.querySelector(".music-icon-pause");
 
-    let ytPlayer = null;
-    let playerReady = false;   // true só após o evento onReady do YT
-    let playOnReady = false;   // fila: usuário clicou antes do player estar pronto
+    let scWidget = null;
+    let scReady = false;
     let musicPlaying = false;
-    const YT_VIDEO_ID = "a2Cg98t2oU8"; // Can't Take My Eyes Off You - Frankie Valli (original 1967)
+    let playQueued = false; // usuário clicou antes do widget estar pronto
 
-    // Carrega a API do YouTube dinamicamente (lazy — só quando o usuário clicar)
-    function loadYouTubeAPI() {
-        if (window.YT && window.YT.Player) {
-            initYTPlayer();
-            return;
-        }
-        // Evita inserir o script duas vezes
-        if (document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
+    function initSCWidget() {
+        const iframe = document.getElementById("sc-widget");
+        if (!iframe || !window.SC) return;
+
+        scWidget = SC.Widget(iframe);
+
+        scWidget.bind(SC.Widget.Events.READY, () => {
+            scReady = true;
+            scWidget.setVolume(80);
+            if (playQueued) {
+                playQueued = false;
+                scWidget.play();
+                setMusicPlaying(true);
+            }
+        });
+
+        // Loop automático ao terminar
+        scWidget.bind(SC.Widget.Events.FINISH, () => {
+            scWidget.seekTo(0);
+            scWidget.play();
+        });
     }
 
-    // Chamado automaticamente pelo SDK do YouTube quando ele terminar de carregar
-    window.onYouTubeIframeAPIReady = function () {
-        initYTPlayer();
-    };
-
-    function initYTPlayer() {
-        if (ytPlayer) return;
-        ytPlayer = new YT.Player("music-player", {
-            videoId: YT_VIDEO_ID,
-            playerVars: {
-                autoplay: 0,
-                controls: 0,
-                disablekb: 1,
-                fs: 0,
-                iv_load_policy: 3,
-                loop: 1,
-                playlist: YT_VIDEO_ID,
-                modestbranding: 1,
-                rel: 0,
-            },
-            events: {
-                onReady: () => {
-                    playerReady = true;
-                    // Se o usuário já clicou enquanto o player carregava, toca agora
-                    if (playOnReady) {
-                        playOnReady = false;
-                        ytPlayer.playVideo();
-                        setMusicPlaying(true);
-                    }
-                },
-                onStateChange: (event) => {
-                    // Garante loop manual (playerVars.loop às vezes não funciona com IFrame API)
-                    if (event.data === YT.PlayerState.ENDED) {
-                        ytPlayer.seekTo(0);
-                        ytPlayer.playVideo();
-                    }
-                },
-                onError: (event) => {
-                    console.warn("YouTube player error:", event.data);
-                },
-            },
+    // Inicializa assim que o DOM + SC API estiverem prontos
+    if (window.SC) {
+        initSCWidget();
+    } else {
+        // SC API carrega de forma async via <script> no HTML
+        window.addEventListener("load", () => {
+            if (window.SC) initSCWidget();
         });
     }
 
     musicBtn.addEventListener("click", () => {
-        if (!ytPlayer || !playerReady) {
-            // Player ainda não carregou — marca para tocar quando estiver pronto
-            playOnReady = true;
-            loadYouTubeAPI();
-            // Feedback visual imediato para o usuário saber que está carregando
-            musicBtn.classList.add("playing");
-            musicIconPlay.classList.add("hidden");
-            musicIconPause.classList.remove("hidden");
+        if (!scWidget || !scReady) {
+            // Widget ainda inicializando — enfileira o play
+            playQueued = true;
+            setMusicPlaying(true); // feedback visual imediato
             return;
         }
 
         if (musicPlaying) {
-            ytPlayer.pauseVideo();
+            scWidget.pause();
             setMusicPlaying(false);
         } else {
-            ytPlayer.playVideo();
+            scWidget.play();
             setMusicPlaying(true);
         }
     });

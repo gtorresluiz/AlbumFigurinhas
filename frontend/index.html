@@ -49,8 +49,13 @@
             <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
         </svg>
     </button>
-    <!-- YouTube iframe fora da tela (display:none impede o player de inicializar) -->
-    <div id="music-player" style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true"></div>
+    <!-- SoundCloud Widget: fora da tela para não aparecer visualmente -->
+    <iframe id="sc-widget"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/frankievalli/cant-take-my-eyes-off-you&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        allow="autoplay"
+        style="position:fixed; left:-9999px; top:-9999px; width:200px; height:100px; border:none;"
+        aria-hidden="true">
+    </iframe>
 
     <!-- Navigation Arrows -->
     <button id="btn-prev" class="nav-btn nav-btn-left" aria-label="Página Anterior">
@@ -406,6 +411,8 @@
 
     <!-- Page Flip Library -->
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+    <!-- SoundCloud Widget API -->
+    <script src="https://w.soundcloud.com/player/api.js"></script>
     <!-- Logic -->
     <script src="app.js"></script>
 </body>
